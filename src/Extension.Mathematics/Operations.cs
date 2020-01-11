@@ -11,7 +11,6 @@ namespace Extension.Mathematics
         /// <summary>
         /// Returns the faculty of n (n!) in prime factor format
         /// </summary>
-        /// <exception cref="OverflowException"></exception>
         /// <param name="n"></param>
         /// <returns></returns>
         public static PrimeFactorNumber Faculty(int n)
@@ -24,7 +23,6 @@ namespace Extension.Mathematics
         /// Return the binomial coefficient, of n over k with is the number of possible unique combinations
         /// of length k from a set of n elements
         /// </summary>
-        /// <exception cref="OverflowException"></exception>
         /// <param name="n"></param>
         /// <param name="k"></param>
         /// <returns></returns>
@@ -35,6 +33,77 @@ namespace Extension.Mathematics
             var result = dividend / divisor;
 
             return result;
+        }
+
+        /// <summary>
+        /// Computes the greates common divisor of a and b
+        /// of length k from a set of n elements
+        /// </summary>
+        /// <exception cref="OverflowException"></exception>
+        /// <param name="a"></param>
+        /// <param name="b"></param>
+        /// <returns></returns>
+        public static ulong GCD(ulong a, ulong b)
+        {
+            while (a != 0 && b != 0)
+            {
+                if (a > b)
+                    a %= b;
+                else
+                    b %= a;
+            }
+
+            return a == 0 ? b : a;
+        }
+
+        /// <summary>
+        /// Computes the greates common divisor of a and b
+        /// of length k from a set of n elements
+        /// </summary>
+        /// <exception cref="OverflowException"></exception>
+        /// <param name="a"></param>
+        /// <param name="b"></param>
+        /// <returns></returns>
+        public static int GCD(int a, int b)
+        {
+            a = Math.Abs(a);
+            b = Math.Abs(b);
+
+            while (a != 0 && b != 0)
+            {
+                if (a > b)
+                    a %= b;
+                else
+                    b %= a;
+            }
+
+            return a == 0 ? b : a;
+        }
+
+        /// <summary>
+        /// Computes the least common multiple of a and b
+        /// of length k from a set of n elements
+        /// </summary>
+        /// <exception cref="OverflowException"></exception>
+        /// <param name="a"></param>
+        /// <param name="b"></param>
+        /// <returns></returns>
+        public static ulong LCM(ulong a, ulong b)
+        { 
+            return a * b / GCD(a, b);
+        }
+
+        /// <summary>
+        /// Computes the least common multiple of a and b
+        /// of length k from a set of n elements
+        /// </summary>
+        /// <exception cref="OverflowException"></exception>
+        /// <param name="a"></param>
+        /// <param name="b"></param>
+        /// <returns></returns>
+        public static int LCM(int a, int b)
+        {
+            return a * b / GCD(a, b);
         }
 
         /// <summary>
@@ -60,6 +129,7 @@ namespace Extension.Mathematics
         /// <summary>
         /// An overflow safe pow operation
         /// </summary>
+        /// <exception cref="OverflowException"></exception>
         /// <param name="a"></param>
         /// <param name="b"></param>
         /// <returns></returns>
@@ -81,6 +151,7 @@ namespace Extension.Mathematics
         /// <summary>
         /// An overflow safe pow operation
         /// </summary>
+        /// <exception cref="OverflowException"></exception>
         /// <param name="a"></param>
         /// <param name="b"></param>
         /// <returns></returns>

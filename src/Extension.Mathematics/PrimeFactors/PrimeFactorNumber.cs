@@ -13,7 +13,7 @@ namespace Extension.Mathematics.PrimeFactors
         /// <summary>
         /// Prime numbers in (0,100)
         /// </summary>
-        private static List<int> PRIMESTO100 = new List<int>() {2, 3, 5, 7, 11, 13, 17, 19,
+        public static List<int> PRIMESTO100 = new List<int>() {2, 3, 5, 7, 11, 13, 17, 19,
         23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97 };
 
         private bool IsZero = false;

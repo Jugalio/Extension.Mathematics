@@ -1,9 +1,30 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.1</TargetFramework>
     <AssemblyName>Extension.Mathematics</AssemblyName>
     <RootNamespace>Extension.Mathematics</RootNamespace>
+    <Authors>Falk von Ohlen</Authors>
+    <Company />
+    <Product />
+    <PackageLicenseFile>LICENSE</PackageLicenseFile>
+    <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>StrongNameKey.snk</AssemblyOriginatorKeyFile>
+    <RepositoryUrl>https://github.com/Jugalio/Extension.Mathematics</RepositoryUrl>
+    <RepositoryType>C#</RepositoryType>
+    <AssemblyVersion>1.2.0.0</AssemblyVersion>
+    <FileVersion>1.2.0.0</FileVersion>
+    <Description>Extension methods for mathematics operations (e.g. gcd, lcm), Combinatorics and PrimeFactorNumbers</Description>
+    <PackageReleaseNotes>Fixed gcd error by using abs</PackageReleaseNotes>
+    <Version>1.2.0</Version>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="..\..\LICENSE">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
+  </ItemGroup>
 
 </Project>
