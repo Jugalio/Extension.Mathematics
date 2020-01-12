@@ -13,11 +13,11 @@
     <AssemblyOriginatorKeyFile>StrongNameKey.snk</AssemblyOriginatorKeyFile>
     <RepositoryUrl>https://github.com/Jugalio/Extension.Mathematics</RepositoryUrl>
     <RepositoryType>C#</RepositoryType>
-    <AssemblyVersion>1.2.0.0</AssemblyVersion>
-    <FileVersion>1.2.0.0</FileVersion>
+    <AssemblyVersion>1.2.1.0</AssemblyVersion>
+    <FileVersion>1.2.1.0</FileVersion>
     <Description>Extension methods for mathematics operations (e.g. gcd, lcm), Combinatorics and PrimeFactorNumbers</Description>
-    <PackageReleaseNotes>Fixed gcd error by using abs</PackageReleaseNotes>
-    <Version>1.2.0</Version>
+    <PackageReleaseNotes>Constructors for 2D and 3D vectors</PackageReleaseNotes>
+    <Version>1.2.1</Version>
   </PropertyGroup>
 
   <ItemGroup>

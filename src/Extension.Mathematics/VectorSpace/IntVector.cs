@@ -37,6 +37,31 @@ namespace Extension.Mathematics.VectorSpace
         }
 
         /// <summary>
+        /// Initialize a integer vector
+        /// </summary>
+        /// <param name="elements"></param>
+        /// <param name="orientation"></param>
+        public IntVector(int x, int y, VectorOrientation orientation = VectorOrientation.Column)
+        {
+            Elements.Add(x);
+            Elements.Add(y);
+            Orientation = orientation;
+        }
+
+        /// <summary>
+        /// Initialize a integer vector
+        /// </summary>
+        /// <param name="elements"></param>
+        /// <param name="orientation"></param>
+        public IntVector(int x, int y, int z, VectorOrientation orientation = VectorOrientation.Column)
+        {
+            Elements.Add(x);
+            Elements.Add(y);
+            Elements.Add(z);
+            Orientation = orientation;
+        }
+
+        /// <summary>
         /// Adds a new element to the end of the vector
         /// </summary>
         /// <param name="elem"></param>
