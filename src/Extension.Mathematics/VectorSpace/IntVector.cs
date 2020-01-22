@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,17 +9,27 @@ namespace Extension.Mathematics.VectorSpace
     /// <summary>
     /// A mathematic vector with integer values
     /// </summary>
-    public class IntVector
+    public class IntVector : List<int>
     {
-        /// <summary>
-        /// The elements in this vector
-        /// </summary>
-        public List<int> Elements { get; private set; }
-
         /// <summary>
         /// The dimension of this vector
         /// </summary>
-        public int Dimension => Elements.Count;
+        public int Dimension => this.Count;
+
+        /// <summary>
+        /// Easy acces to the first element
+        /// </summary>
+        public int X => this[0];
+
+        /// <summary>
+        /// Easy acces to the second element
+        /// </summary>
+        public int Y => this[1];
+
+        /// <summary>
+        /// Easy acces to the third element
+        /// </summary>
+        public int Z => this[2];
 
         /// <summary>
         /// The orientation of this vector
@@ -30,9 +41,8 @@ namespace Extension.Mathematics.VectorSpace
         /// </summary>
         /// <param name="elements"></param>
         /// <param name="orientation"></param>
-        public IntVector(IEnumerable<int> elements, VectorOrientation orientation = VectorOrientation.Column)
+        public IntVector(IEnumerable<int> elements, VectorOrientation orientation = VectorOrientation.Column) : base(elements)
         {
-            Elements = elements.ToList();
             Orientation = orientation;
         }
 
@@ -41,10 +51,10 @@ namespace Extension.Mathematics.VectorSpace
         /// </summary>
         /// <param name="elements"></param>
         /// <param name="orientation"></param>
-        public IntVector(int x, int y, VectorOrientation orientation = VectorOrientation.Column)
+        public IntVector(int x, int y, VectorOrientation orientation = VectorOrientation.Column) : base()
         {
-            Elements.Add(x);
-            Elements.Add(y);
+            Add(x);
+            Add(y);
             Orientation = orientation;
         }
 
@@ -53,40 +63,21 @@ namespace Extension.Mathematics.VectorSpace
         /// </summary>
         /// <param name="elements"></param>
         /// <param name="orientation"></param>
-        public IntVector(int x, int y, int z, VectorOrientation orientation = VectorOrientation.Column)
+        public IntVector(int x, int y, int z, VectorOrientation orientation = VectorOrientation.Column) : base()
         {
-            Elements.Add(x);
-            Elements.Add(y);
-            Elements.Add(z);
+            Add(x);
+            Add(y);
+            Add(z);
             Orientation = orientation;
-        }
-
-        /// <summary>
-        /// Adds a new element to the end of the vector
-        /// </summary>
-        /// <param name="elem"></param>
-        public void AddElement(int elem)
-        {
-            Elements.Add(elem);
-        }
-
-        /// <summary>
-        /// Adds an element at a specified index
-        /// </summary>
-        /// <param name="index"></param>
-        /// <param name="elem"></param>
-        public void AddElementAt(int index, int elem)
-        {
-            Elements.Insert(index, elem);
         }
 
         /// <summary>
         /// Make the vector a normalized vector
         /// </summary>
-        public void Normalize()
+        public IntVector Normalize()
         {
-            var gcd = Elements.Aggregate((a, b) => Operations.GCD(a, b));
-            Elements = Elements.Select(e => e / gcd).ToList();
+            var gcd = this.Aggregate((a, b) => Operations.GCD(a, b));
+            return gcd == 0 ? this : this.Select(e => e / gcd).ToIntVector(Orientation);
         }
 
         /// <summary>
@@ -99,21 +90,41 @@ namespace Extension.Mathematics.VectorSpace
                 throw new InvalidOperationException($"Polar coordinates are only defined for 2d vectors");
             }
 
-            var x = Elements[0];
-            var y = Elements[1];
-            var radius = Math.Sqrt(Math.Pow(x, 2) + Math.Pow(y, 2));
+            var radius = Math.Sqrt(Math.Pow(X, 2) + Math.Pow(Y, 2));
+            var quotient = X == 0 ? 0 : Y / (double)X;
 
             //Within [0, 2Pi) ~ [0, 360°)
-            var angle = (x, y) switch
+            var angle = (X, Y) switch
             {
-                _ when x > 0 => Math.Atan(y / x),
-                _ when x < 0 => Math.Atan2(y, x),
-                _ when x == 0 && y > 0 => Math.PI / 2,
-                _ when x == 0 && y < 0 => Math.PI * 3/ 2,
+                _ when X > 0 && Y >= 0 => Math.Atan(quotient),
+                _ when X > 0 && Y < 0 => Math.Atan(quotient) + 2 * Math.PI,
+                _ when X < 0 => Math.Atan(quotient) + Math.PI,
+                _ when X == 0 && Y > 0 => Math.PI / 2,
+                _ when X == 0 && Y < 0 => Math.PI * 3 / 2,
                 _ => default, //Only reached when the radius is 0 and the angle therefore undefined
             };
 
             return new PolarCoordinate(radius, angle);
+        }
+
+        /// <summary>
+        /// Calculates the distance to another vector based on the selected metric
+        /// </summary>
+        /// <param name="b"></param>
+        /// <param name="metric"></param>
+        /// <returns></returns>
+        public int DistanceTo(IntVector b, Metric metric = Metric.Manhatten)
+        {
+            if (Dimension != b.Dimension)
+            {
+                throw new InvalidOperationException($"Both vectors have to be of the same dimension");
+            }
+
+            return metric switch
+            {
+                Metric.Manhatten => this.Zip(b, (a, b) => Math.Abs(a - b)).Sum(),
+                _ => throw new ArgumentException("Metric unknown"),
+            };
         }
 
         /// <summary>
@@ -125,7 +136,7 @@ namespace Extension.Mathematics.VectorSpace
         {
             return obj switch
             {
-                IntVector v => v.Elements.SequenceEqual(Elements),
+                IntVector v => v.SequenceEqual(this),
                 _ => false,
             };
         }
@@ -138,7 +149,8 @@ namespace Extension.Mathematics.VectorSpace
         /// <returns></returns>
         public override int GetHashCode()
         {
-            return string.Join(',', Elements).GetHashCode();
+            int hash = 17;
+            return this.Aggregate(hash, (a, b) => a * 23 + b);
         }
 
         /// <summary>
@@ -163,10 +175,23 @@ namespace Extension.Mathematics.VectorSpace
 
             for (int i = 0; i < a.Dimension; i++)
             {
-                result += (a.Elements[i] * b.Elements[i]);
+                result += (a[i] * b[i]);
             }
 
             return result;
+        }
+
+        /// <summary>
+        /// Scaling of vectors
+        /// </summary>
+        /// <param name="a"></param>
+        /// <param name="b"></param>
+        /// <returns></returns>
+        public static IntVector operator *(IntVector a, int b)
+        {
+            var newElements = a.Select(e => e * b);
+
+            return new IntVector(newElements, a.Orientation);
         }
 
         /// <summary>
@@ -187,8 +212,42 @@ namespace Extension.Mathematics.VectorSpace
                 throw new InvalidOperationException($"Both vectors have to be of the same dimension");
             }
 
-            var newElements = a.Elements.Zip(b.Elements, (elemA, elemB) => elemA + elemB);
+            var newElements = a.Zip(b, (elemA, elemB) => elemA + elemB);
 
+            return new IntVector(newElements, a.Orientation);
+        }
+
+        /// <summary>
+        /// Addition for IntVector
+        /// </summary>
+        /// <param name="a"></param>
+        /// <param name="b"></param>
+        /// <returns></returns>
+        public static IntVector operator +(IntVector a, (int x, int y) b)
+        {
+            if (a.Dimension != 2)
+            {
+                throw new InvalidOperationException($"Both vectors have to be of the same dimension");
+            }
+
+            var newElements = new List<int> { a.X + b.x, a.Y + b.y };
+            return new IntVector(newElements, a.Orientation);
+        }
+
+        /// <summary>
+        /// Addition for IntVector
+        /// </summary>
+        /// <param name="a"></param>
+        /// <param name="b"></param>
+        /// <returns></returns>
+        public static IntVector operator +(IntVector a, (int x, int y, int z) b)
+        {
+            if (a.Dimension != 3)
+            {
+                throw new InvalidOperationException($"Both vectors have to be of the same dimension");
+            }
+
+            var newElements = new List<int> { a.X + b.x, a.Y + b.y, a.Z + b.z };
             return new IntVector(newElements, a.Orientation);
         }
 
@@ -210,7 +269,43 @@ namespace Extension.Mathematics.VectorSpace
                 throw new InvalidOperationException($"Both vectors have to be of the same dimension");
             }
 
-            var newElements = a.Elements.Zip(b.Elements, (elemA, elemB) => elemA - elemB);
+            var newElements = a.Zip(b, (elemA, elemB) => elemA - elemB);
+
+            return new IntVector(newElements, a.Orientation);
+        }
+
+        /// <summary>
+        /// Subtraction for IntVector
+        /// </summary>
+        /// <param name="a"></param>
+        /// <param name="b"></param>
+        /// <returns></returns>
+        public static IntVector operator -(IntVector a, (int x, int y) b)
+        {
+            if (a.Dimension != 2)
+            {
+                throw new InvalidOperationException($"Both vectors have to be of the same dimension");
+            }
+
+            var newElements = new List<int> { a.X - b.x, a.Y - b.y };
+
+            return new IntVector(newElements, a.Orientation);
+        }
+
+        /// <summary>
+        /// Subtraction for IntVector
+        /// </summary>
+        /// <param name="a"></param>
+        /// <param name="b"></param>
+        /// <returns></returns>
+        public static IntVector operator -(IntVector a, (int x, int y, int z) b)
+        {
+            if (a.Dimension != 3)
+            {
+                throw new InvalidOperationException($"Both vectors have to be of the same dimension");
+            }
+
+            var newElements = new List<int> { a.X - b.x, a.Y - b.y, a.Z - b.z };
 
             return new IntVector(newElements, a.Orientation);
         }
@@ -221,9 +316,22 @@ namespace Extension.Mathematics.VectorSpace
         /// <param name="obj1"></param>
         /// <param name="obj2"></param>
         /// <returns></returns>
-        public static bool operator ==(IntVector obj1, IntVector obj2)
+        public static bool operator ==(IntVector obj1, object obj2)
         {
-            return obj1.Equals(obj2);
+            var asObj = (object)obj1;
+
+            if (asObj == null)
+            {
+                return obj2 == null;
+            }
+            else
+            {
+                return obj2 switch
+                {
+                    IntVector v => v.SequenceEqual(obj1),
+                    _ => false,
+                };
+            }
         }
 
         /// <summary>
@@ -232,12 +340,26 @@ namespace Extension.Mathematics.VectorSpace
         /// <param name="obj1"></param>
         /// <param name="obj2"></param>
         /// <returns></returns>
-        public static bool operator !=(IntVector obj1, IntVector obj2)
+        public static bool operator !=(IntVector obj1, object obj2)
         {
             return !(obj1 == obj2);
         }
+    }
 
-
+    /// <summary>
+    /// Extensions for linq
+    /// </summary>
+    public static class IntVectorLINQExtension
+    {
+        /// <summary>
+        /// Extension for linq
+        /// </summary>
+        /// <param name="source"></param>
+        /// <returns></returns>
+        public static IntVector ToIntVector(this IEnumerable<int> source, VectorOrientation orientation = VectorOrientation.Column)
+        {
+            return new IntVector(source, orientation);
+        }
     }
 
     /// <summary>
@@ -247,5 +369,13 @@ namespace Extension.Mathematics.VectorSpace
     {
         Column,
         Row
+    }
+
+    /// <summary>
+    /// Supported metric for distance measuring
+    /// </summary>
+    public enum Metric
+    {
+        Manhatten,
     }
 }

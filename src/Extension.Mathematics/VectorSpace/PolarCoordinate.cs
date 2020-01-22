@@ -27,5 +27,65 @@ namespace Extension.Mathematics.VectorSpace
             Angle = angle;
         }
 
+        /// <summary>
+        /// Gets the int vector which is defined by this polar coordinates
+        /// </summary>
+        /// <returns></returns>
+        public IntVector GetIntVector()
+        {
+            int x = (int)Math.Round(Radius * Math.Cos(Angle));
+            int y = (int)Math.Round(Radius * Math.Sin(Angle));
+            return new IntVector(x, y);
+        }
+
+        /// <summary>
+        /// Polar coordinates equal each other if they have the same angle and radius
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <returns></returns>
+        public override bool Equals(object obj)
+        {
+            return obj switch
+            {
+                PolarCoordinate p => p.Angle == Angle && p.Radius == Radius,
+                _ => false,
+            };
+        }
+
+        /// <summary>
+        /// Override hashcode
+        /// </summary>
+        /// <returns></returns>
+        public override int GetHashCode()
+        {
+            double hash = 17;
+            hash = hash * 23 + Angle;
+            hash = hash * 23 + Radius;
+            return (int)hash;
+        }
+
+        public static bool operator ==(PolarCoordinate a, object b)
+        {
+            var asObj = (object)a;
+
+            if (asObj == null)
+            {
+                return b == null;
+            }
+            else
+            {
+                return b switch
+                {
+                    PolarCoordinate p => p.Angle == a?.Angle && p.Radius == a?.Radius,
+                    _ => false,
+                };
+            }
+        }
+
+        public static bool operator !=(PolarCoordinate a, object b)
+        {
+            return !(a == b);
+        }
+
     }
 }

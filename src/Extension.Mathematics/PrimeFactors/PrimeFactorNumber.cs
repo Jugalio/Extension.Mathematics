@@ -333,7 +333,8 @@ namespace Extension.Mathematics.PrimeFactors
         /// <returns></returns>
         public override int GetHashCode()
         {
-            return (string.Join(',', NumeratorPrimeFactors.Values) + string.Join(',', DenominatorPrimeFactors.Values)).GetHashCode();
+            int hash = 17;
+            return NumeratorPrimeFactors.Union(DenominatorPrimeFactors).Select(p => p.Key * p.Value).Aggregate(hash, (a, b) => a * 23 + b);
         }
 
         /// <summary>

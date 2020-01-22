@@ -27,6 +27,11 @@ namespace Extension.Mathematics.Tests.VectorSpace
                 new List<int>{28, 56, 70, 140},
                 new List<int>{2, 4, 5, 10},
             },
+            new object[]
+            {
+                new List<int>{0, 0},
+                new List<int>{0,0},
+            },
         };
 
         private static readonly object[] sourceList2 = new object[]
@@ -87,9 +92,9 @@ namespace Extension.Mathematics.Tests.VectorSpace
         public void NormalizeTest(List<int> elements, List<int> expectedNormalization)
         {
             var vector = new IntVector(elements);
-            vector.Normalize();
+            var normalized = vector.Normalize();
 
-            Assert.IsTrue(vector.Elements.SequenceEqual(expectedNormalization));
+            Assert.IsTrue(normalized.SequenceEqual(expectedNormalization));
         }
 
         [TestCase(0, 2, Math.PI / 2)]
@@ -97,12 +102,20 @@ namespace Extension.Mathematics.Tests.VectorSpace
         [TestCase(2, 0, 0)]
         [TestCase(-2, 0, Math.PI)]
         [TestCase(1, 1, Math.PI / 4)]
+        [TestCase(1, -1, Math.PI * 7 / 4)]
+        [TestCase(-1, 1, Math.PI * 3 / 4)]
+        [TestCase(-1, -1, Math.PI * 5 / 4)]
         public void GetPolarCoordinateTest(int x, int y, double angle)
         {
-            var vector = new IntVector(new List<int> { x, y });
+            var vector = new IntVector(x, y);
             var polar = vector.GetPolarCoordinate();
 
             Assert.IsTrue(polar.Angle == angle);
+
+            var reverseVector = polar.GetIntVector();
+
+            Assert.IsTrue(x == reverseVector.X);
+            Assert.IsTrue(y == reverseVector.Y);
         }
 
         [TestCaseSource("sourceList2")]
@@ -122,7 +135,7 @@ namespace Extension.Mathematics.Tests.VectorSpace
 
             var result = vectorA + vectorB;
 
-            Assert.IsTrue(result.Elements.SequenceEqual(expectedElements));
+            Assert.IsTrue(result.SequenceEqual(expectedElements));
         }
 
         [TestCaseSource("sourceList4")]
@@ -133,8 +146,29 @@ namespace Extension.Mathematics.Tests.VectorSpace
 
             var result = vectorA - vectorB;
 
-            Assert.IsTrue(result.Elements.SequenceEqual(expectedElements));
+            Assert.IsTrue(result.SequenceEqual(expectedElements));
         }
 
+        [Test]
+        public void EqualNullTest()
+        {
+            IntVector vec = null;
+
+            Assert.IsTrue(vec == null);
+        }
+
+        [TestCase(1, 2, 1, 2, true)]
+        [TestCase(1, 2, 4, 2, false)]
+        [TestCase(1, 2, 1, 1, false)]
+        public void EqualTest(int x, int y, int x1, int y1, bool expect)
+        {
+            var int1 = new PolarCoordinate(x, y);
+            var int2 = new PolarCoordinate(x1, y1);
+
+            var result = int1 == int2;
+
+            Assert.IsTrue(result == expect);
+            Assert.IsFalse(result != expect);
+        }
     }
 }
